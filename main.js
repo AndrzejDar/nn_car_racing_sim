@@ -3,6 +3,8 @@ const reproductionRate = 0.01;
 
 let canvas = "";
 let ctx = "";
+let graphCtx = "";
+let graphContainer = "";
 let road = "";
 let cars = [];
 let traffic = [];
@@ -42,7 +44,18 @@ function initialize() {
   }
 
   animate();
-  printPrevResuts();
+  // printPrevResuts();
+
+  graphContainer = document.getElementById("visuals");
+  graphCanvas = document.getElementById("graph");
+  graphCanvas.width = graphContainer.clientWidth;
+
+  graphCanvas.height = (graphContainer.clientHeight - 30) / 2;
+
+  graphCtx = graphCanvas.getContext("2d");
+
+  // drawVisuals(graphCtx, bestCar.brain);
+  drawResultsChart(prevResults, graphContainer);
 }
 
 function save() {
@@ -107,10 +120,10 @@ function mutateCars(reproductorsBrains) {
     //first iteration of mutation
     // NerualNetwork.mutate(cars[i].brain, globalBiasAmount, globalWeightAmount);
     //log brain of first reproductor
-    if (i == 0) console.log(cars[i].brain.levels[0].weights[0]);
+    // if (i == 0) console.log(cars[i].brain.levels[0].weights[0]);
     //log briani of last reproductor
-    if (i == reproductorsBrains.length - 1)
-      console.log(cars[i].brain.levels[0].weights[0]);
+    // if (i == reproductorsBrains.length - 1)
+    // console.log(cars[i].brain.levels[0].weights[0]);
   }
 }
 
@@ -175,8 +188,10 @@ function animate() {
     reset();
   }
   if (generation % drawNth == 0) drawSim();
+  // drawVisuals(bestCar.brain);
 
   if (isSimulating) requestAnimationFrame(animate);
+  // drawGraph(bestCar.brain);
 }
 
 function drawSim() {
@@ -204,6 +219,7 @@ function drawSim() {
   // cars[0].draw(ctx, "purple", false);
 
   ctx.restore();
+  drawVisuals(graphCtx, graphContainer, bestCar.brain);
 }
 
 function printPrevResuts() {

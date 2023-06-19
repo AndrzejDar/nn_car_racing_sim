@@ -15,11 +15,7 @@ class Car {
 
     if (controlType != "DUMMY") {
       this.sensor = new Sensor(this);
-      this.brain = new NerualNetwork([
-        this.sensor.rayCount,
-        this.sensor.rayCount,
-        4,
-      ]);
+      this.brain = new NerualNetwork([this.sensor.rayCount, 7, 4]);
     }
     if (controlType == "AI") {
       //   console.log(this.brain);

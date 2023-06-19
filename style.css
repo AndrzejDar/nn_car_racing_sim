@@ -26,6 +26,18 @@ button {
   background-color: lightgray;
 }
 
+#visuals {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
+  gap: 30px;
+}
+#graph,
+#chart {
+  background-color: lightgray;
+}
+
 #results {
   display: flex;
   flex-direction: column;
