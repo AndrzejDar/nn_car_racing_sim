@@ -1,4 +1,4 @@
-const genSize = 700;
+const genSize = 1000;
 const reproductionRate = 0.01;
 
 let canvas = "";
@@ -90,7 +90,7 @@ function reset() {
 function generateCars(i) {
   const cars = new Array(i);
   for (let i = 0; i < genSize; i++) {
-    cars[i] = new Car(road.getLaneCenter(2), 100, 30, 50, "AI");
+    cars[i] = new Car(road.getLaneCenter(2), 0, 30, 50, "AI");
   }
   return cars;
 }
@@ -195,8 +195,8 @@ function drawSim() {
       cars[i].draw(ctx, "green");
       ctx.globalAlpha = 0.05;
     }
-
-    cars[i].draw(ctx, "blue");
+    //draw only cars in view
+    if (bestCar.y - cars[i].y > -400) cars[i].draw(ctx, "blue");
   }
   ctx.globalAlpha = 1;
   bestCar.draw(ctx, "blue", true);

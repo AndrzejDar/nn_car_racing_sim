@@ -6,7 +6,7 @@ class Road {
     this.left = x - width / 2;
     this.right = x + width / 2;
 
-    const inf = 20000;
+    const inf = 40000;
     this.top = -inf;
     this.bottom = inf / 100;
 

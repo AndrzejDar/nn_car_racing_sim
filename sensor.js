@@ -32,7 +32,7 @@ class Sensor {
       );
       if (touch) touches.push(touch);
     }
-
+    // #1 forEach slower than #2 by 33%
     // traffic.forEach((car) => {
     //   const poly = car.polygon;
     //   poly.forEach((point, j) => {
@@ -41,7 +41,15 @@ class Sensor {
     //     if (value) touches.push(value);
     //   });
     // });
+
+    // #2 for loop fastest so far 120 ms for 700 cars
     for (let i = 0; i < traffic.length; i++) {
+      // console.log(ray[0], ray[1], traffic[i]);
+
+      // cut out checks for far away objects down by 60%(to 40ms) for 700
+      if (traffic[i].y - ray[0].y < -this.rayLength * 1.2) continue;
+      if (traffic[i].y - ray[0].y > this.rayLength * 1.2) continue;
+
       const poly = traffic[i].polygon;
       for (let j = 0; j < poly.length; j++) {
         const value = getIntersection(

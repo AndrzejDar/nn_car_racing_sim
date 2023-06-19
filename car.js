@@ -60,7 +60,10 @@ class Car {
     }
 
     for (let i = 0; i < traffic.length; i++) {
-      if (polysIntersect(this.polygon, traffic[i].polygon)) return true;
+      // cut out checks for far away objects down by 60%(to 16ms) for 700
+      if (traffic[i].y - this.y > -50 && traffic[i].y - this.y < 50) {
+        if (polysIntersect(this.polygon, traffic[i].polygon)) return true;
+      }
     }
     return false;
   }
@@ -108,10 +111,10 @@ class Car {
       const flip = this.speed > 0 ? 1 : -1;
 
       if (this.controls.left) {
-        this.angle += 0.02 * flip;
+        this.angle += 0.04 * flip;
       }
       if (this.controls.right) {
-        this.angle -= 0.02 * flip;
+        this.angle -= 0.04 * flip;
       }
     }
 
