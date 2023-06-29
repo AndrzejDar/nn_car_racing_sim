@@ -3,7 +3,7 @@ const drawVisuals = (graphCtx, container, brain) => {
 };
 
 const drawResultsChart = (results, container) => {
-  console.log(results);
+  //   console.log(results);
   chartCanvas = document.getElementById("chart");
   chartCanvas.width = container.clientWidth;
   chartCanvas.height = (container.clientHeight - 30) / 2;
@@ -16,8 +16,6 @@ const drawResultsChart = (results, container) => {
   results.forEach((res) => {
     if (maxVal > res) maxVal = res;
   });
-  console.log(maxVal);
-
   results.forEach((result, x) => {
     chartCtx.lineTo(
       ((x + 1) * chartCanvas.clientWidth) / results.length,
@@ -29,6 +27,7 @@ const drawResultsChart = (results, container) => {
   chartCtx.lineWidth = 2;
   chartCtx.stroke();
   chartCtx.restore();
+  chartCtx.fillText((maxVal * -1).toFixed(0), 10, 20);
 };
 
 const drawGraph = (graphCtx, container, brain) => {
@@ -69,6 +68,7 @@ const drawLevels = (brain, colWidth, graphCtx) => {
     });
   }
 
+  //input nodes
   brain.levels[0].weights[0].forEach((node, rowId) => {
     drawNode(
       node,
@@ -113,12 +113,12 @@ const drawNode = (node, colWidth, radius, colId, rowId, graphCtx) => {
   graphCtx.arc(
     colWidth / 2 + colId * colWidth * 3,
     radius / 2 + radius * rowId,
-    radius / 2 - 2,
+    radius / 2 - 10,
     0,
     Math.PI * 2
   );
   graphCtx.strokeStyle = "red";
-  graphCtx.lineWidth = 2;
+  graphCtx.lineWidth = (node + 2) * 10;
   graphCtx.stroke();
   graphCtx.fillStyle = "white";
   graphCtx.fill();

@@ -12,10 +12,11 @@ class Car {
     this.angle = 0;
     this.damaged = false;
     this.controlType = controlType;
+    this.fitness = 0;
 
     if (controlType != "DUMMY") {
       this.sensor = new Sensor(this);
-      this.brain = new NerualNetwork([this.sensor.rayCount, 7, 4]);
+      this.brain = new NerualNetwork([this.sensor.rayCount, 14, 7, 4]);
     }
     if (controlType == "AI") {
       //   console.log(this.brain);
@@ -30,6 +31,7 @@ class Car {
       this.#move();
       this.polygon = this.#createPolygon();
       this.damaged = this.#assesDamage(roadBorders, traffic);
+      if (this.damaged == true) this.fitness = this.y * -1;
     }
     if (this.sensor) {
       this.sensor.update(roadBorders, traffic);

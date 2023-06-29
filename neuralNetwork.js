@@ -51,40 +51,63 @@ class NerualNetwork {
     });
   }
 
-  static geneticAlgo(a, b, mutationRange = 1, mutationChance = 0.01) {
+  static geneticAlgo(a, b, mutationRange = 1, mutationChance = 0.05, print) {
+    if (print == true) {
+      if (
+        a.levels[a.levels.length - 1].biases ===
+        b.levels[b.levels.length - 1].biases
+      )
+        console.log("IDEWNTYCZNI RODZICE");
+      // console.log(
+      //   a.levels[a.levels.length - 1].weights[0],
+      //   b.levels[b.levels.length - 1].weights[0]
+      // );
+    }
     a.levels.forEach((level, id) => {
-      if (!level.outputsBinary) {
-        for (let i = 0; i < level.biases.length; i++) {
-          if (randWholeNumInRange(0, 2) == 1)
-            //take from second parent
-            level.biases[i] = b.levels[id].biases[i];
-          if (Math.random() < mutationChance) {
-            level.biases[i] =
-              level.biases[i] + randomDistribution() * mutationRange;
-            // console.log("random mutation")
-          }
-
-          if (level.biases[i] > 1) level.biases[i] = 1;
-          if (level.biases[i] < -1) level.biases[i] = -1;
+      for (let i = 0; i < level.biases.length; i++) {
+        // if (print == true) console.log(randWholeNumInRange(0, 1));
+        if (randWholeNumInRange(0, 1) == 1) {
+          //take from second parent
+          // level.biases[i] = 0;
+          level.biases[i] = b.levels[id].biases[i];
+        }
+        if (Math.random() < mutationChance) {
+          //straight random variant
+          // level.biases[i] = Math.random() * 2 - 1;
+          //random dist variant
+          level.biases[i] = Math.max(
+            -1,
+            Math.min(1, level.biases[i] + randomDistribution() * mutationRange)
+          );
         }
       }
 
       for (let i = 0; i < level.weights.length; i++) {
         for (let j = 0; j < level.weights[i].length; j++) {
-          if (randWholeNumInRange(0, 2) == 1)
+          if (randWholeNumInRange(0, 1) == 1) {
             //take from second parent
             level.weights[i][j] = b.levels[id].weights[i][j];
-          if (Math.random() < mutationChance) {
-            level.weights[i][j] =
-              level.weights[i][j] + randomDistribution() * mutationRange;
-            // console.log("random mutation");
           }
-          if (level.weights[i][j] > 1) level.weights[i][j] = 1;
-          if (level.weights[i][j] < -1) level.weights[i][j] = -1;
+          //random mutation
+          if (Math.random() < mutationChance) {
+            //straight random variant
+            // level.weights[i][j] = Math.random() * 2 - 1;
+            //random dist variant
+            level.weights[i][j] = Math.max(
+              -1,
+              Math.min(
+                1,
+                level.weights[i][j] + randomDistribution() * mutationRange
+              )
+            );
+          }
         }
-        // if (i == 0) console.log("after", i, level.weights[i]);
       }
     });
+    // if (print == true) {
+    //   console.log(a.levels[a.levels.length - 1].biases);
+    //   console.log(a.levels[a.levels.length - 1].weights[0]);
+    // }
   }
 }
 

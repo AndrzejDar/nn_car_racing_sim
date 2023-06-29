@@ -1,5 +1,5 @@
 const genSize = 1000;
-const reproductionRate = 0.01;
+const reproductionRate = 0.05;
 
 let canvas = "";
 let ctx = "";
@@ -38,7 +38,7 @@ function initialize() {
   let bestCar = cars[0];
 
   if (reproductorsBrains.length > 0) {
-    console.log(reproductorsBrains[0]);
+    // console.log(reproductorsBrains[0]);
     // console.log(reproductorsBrains[0].levels[0].biases[0].stringify());
     mutateCars(reproductorsBrains);
   }
@@ -81,18 +81,18 @@ function kill() {
     return a.y - b.y;
   });
   console.log(sortedCars);
-  reproductorsBrains = [];
-  for (let i = 0; i < genSize * reproductionRate; i++)
-    reproductorsBrains.push(sortedCars[i].brain);
+  // reproductorsBrains = [];
+  // for (let i = 0; i < genSize * reproductionRate; i++)
+  //   reproductorsBrains.push(sortedCars[i].brain);
 
-  console.log(reproductorsBrains);
+  // console.log(reproductorsBrains);
 
   for (let i = 0; i < cars.length; i++) {
     cars[i].damaged = true;
   }
 }
 function reset() {
-  console.log(bestCar);
+  // console.log(bestCar);
   prevResults.push(bestCar.y);
   stop();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -109,13 +109,49 @@ function generateCars(i) {
 }
 
 function mutateCars(reproductorsBrains) {
+  let fitnessSum = 0;
+  for (let i = 0; i < reproductorsBrains.length; i++) {
+    fitnessSum += reproductorsBrains[i][1];
+  }
+  // console.log(fitnessSum);
+
   for (let i = 0; i < cars.length; i++) {
     // console.log(i % reproductors.length);
-    cars[i].brain = deepCopy(reproductorsBrains[i % reproductorsBrains.length]);
-    if (i >= reproductorsBrains.length)
+    cars[i].brain = deepCopy(
+      reproductorsBrains[i % reproductorsBrains.length][0]
+    );
+    //print first after reproductors
+    const selectedFitness = randWholeNumInRange(0, fitnessSum);
+    // console.log("sf:", selectedFitness);
+    let bBrain = "";
+    let tmpFitnessSum = 0;
+    for (let i = 0; i < reproductorsBrains.length; i++) {
+      tmpFitnessSum += reproductorsBrains[i][1];
+      if (tmpFitnessSum >= selectedFitness) {
+        bBrain = reproductorsBrains[i][0];
+        // console.log(bBrain);
+        break;
+      }
+    }
+
+    if (i == reproductorsBrains.length) {
       NerualNetwork.geneticAlgo(
         cars[i].brain,
-        cars[randWholeNumInRange(0, reproductorsBrains.length)].brain
+        bBrain,
+        // cars[randWholeNumInRange(0, reproductorsBrains.length)].brain,
+        1,
+        0.05,
+        true
+      );
+    }
+    if (i > reproductorsBrains.length)
+      NerualNetwork.geneticAlgo(
+        cars[i].brain,
+        bBrain,
+        // cars[randWholeNumInRange(0, reproductorsBrains.length)].brain,
+        1,
+        0.05,
+        false
       );
     //first iteration of mutation
     // NerualNetwork.mutate(cars[i].brain, globalBiasAmount, globalWeightAmount);
@@ -143,12 +179,15 @@ function animate() {
     //kill struglers
     if (cars[i].y > deathLine.y && !cars[i].damaged) {
       cars[i].damaged = true;
+      cars[i].fitness = cars[i].y * -1;
     }
     // save as alive
     if (!cars[i].damaged) alive.push(i);
 
     // animtae ai cars
     if (cars[i].damaged == false) cars[i].update(road.borders, traffic);
+
+    // sa
   }
 
   // count driving
@@ -160,34 +199,43 @@ function animate() {
   genCounter.innerText = `Gen: ${generation}`;
 
   //save brains if reproductionRate is reached
-  if (alive.length < genSize * reproductionRate && isBrainsSaved == false) {
-    console.log(alive);
-    if (alive.length != 0) reproductorsBrains = [];
-    for (let i = 0; i < alive.length; i++) {
-      reproductorsBrains.push(cars[alive[i]].brain);
-    }
+  // if (alive.length < genSize * reproductionRate && isBrainsSaved == false) {
+  //   console.log(alive.length);
+  //   console.log(genSize * reproductionRate);
+  //   if (alive.length != 0) reproductorsBrains = [];
+  //   for (let i = 0; i < alive.length; i++) {
+  //     reproductorsBrains.push(cars[alive[i]].brain);
+  //   }
 
-    console.log("saved reproductors to variable", reproductorsBrains);
-    isBrainsSaved = true;
-  }
+  //   console.log(
+  //     "saved reproductors to variable",
+  //     reproductorsBrains.length,
+  //     reproductorsBrains
+  //   );
+  //   isBrainsSaved = true;
+  // }
 
-  if (alive.length < (genSize * reproductionRate) / 2 && generation < 3) {
-    console.log("reseting");
-
+  // if (alive.length < (genSize * reproductionRate) / 2 && generation < 3) {
+  //   //adjust globals
+  //   generation++;
+  //   reset();
+  // }
+  // if (alive.length < 1 && generation >= 3) {
+  //   //adjust globals
+  //   generation++;
+  //   globalBiasAmount = globalBiasAmount * 0.9;
+  //   globalWeightAmount = globalWeightAmount * 0.9;
+  //   reset();
+  // }
+  if (alive.length < 1) {
     //adjust globals
-    generation++;
-    reset();
-  }
-  if (alive.length < 1 && generation >= 3) {
-    console.log("reseting");
-
-    //adjust globals
+    selectReproductors();
     generation++;
     globalBiasAmount = globalBiasAmount * 0.9;
     globalWeightAmount = globalWeightAmount * 0.9;
     reset();
   }
-  if (generation % drawNth == 0) drawSim();
+  drawSim();
   // drawVisuals(bestCar.brain);
 
   if (isSimulating) requestAnimationFrame(animate);
@@ -220,6 +268,42 @@ function drawSim() {
 
   ctx.restore();
   drawVisuals(graphCtx, graphContainer, bestCar.brain);
+}
+
+function selectReproductors() {
+  reproductorsBrains = [];
+  let sortedCars = cars.sort((a, b) => {
+    return b.fitness - a.fitness;
+  });
+  // console.log(sortedCars);
+  let filterdCars = [sortedCars[0]];
+  for (let i = 1; i < sortedCars.length; i++) {
+    if (sortedCars[i].fitness != filterdCars[filterdCars.length - 1].fitness)
+      filterdCars.push(sortedCars[i]);
+  }
+  // console.log(filterdCars);
+
+  for (
+    let i = 0;
+    i < Math.min(genSize * reproductionRate, filterdCars.length);
+    i++
+  ) {
+    reproductorsBrains.push([filterdCars[i].brain, filterdCars[i].fitness]);
+  }
+
+  // console.log(reproductorsBrains);
+
+  //   for (let i = 0; i < alive.length; i++) {
+  //     reproductorsBrains.push(cars[alive[i]].brain);
+  //   }
+
+  //   console.log(
+  //     "saved reproductors to variable",
+  //     reproductorsBrains.length,
+  //     reproductorsBrains
+  //   );
+  //   isBrainsSaved = true;
+  // }
 }
 
 function printPrevResuts() {
